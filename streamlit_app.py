@@ -100,8 +100,10 @@ def app():
     """
 
     # Set the title of the app
-    st.title('Forecasting App')
+    st.title('Fetch Receipts Count Forecasting App')
     st.write('This is a simple demo of the forecast app for receipt count.')
+    st.write(
+        'Project details can be found [here](https://github.com/connectwithprakash/fetch-machine-learning-exercise/blob/main/README.md).')
 
     # Sidebar
     # Add a sidebar to choose the model type
@@ -110,7 +112,7 @@ def app():
                                       'All', 'Rolling Average', 'Linear Regression', 'Linear Regression + Neural Network'])
 
     # Choose start time of the forecast
-    st.subheader('Choose Start Time')
+    st.subheader('Choose the Forecast Start Time')
     start_time = st.date_input('Forecast Start Time', value=datetime.datetime(
         2022, 1, 1), min_value=None, max_value=None, key=None)
 
