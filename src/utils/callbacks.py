@@ -15,7 +15,7 @@ class EarlyStopping:
 
         Args:
             patience (int, optional): The number of epochs to wait for improvement. Defaults to 10.
-            model_path (str, optional): The path to save the model. Defaults to "model.pt".
+            verbose (bool, optional): Whether to print additional information. Defaults to False.
 
         Raises:
             ValueError: If patience is not greater than zero.
@@ -27,13 +27,16 @@ class EarlyStopping:
         self.best_val_loss = np.Inf
         self.verbose = verbose
 
-    def __call__(self, val_loss: float, model: torch.nn.Module) -> None:
+    def __call__(self, val_loss: float, model: torch.nn.Module) -> bool:
         """
         Call function of the EarlyStopping class.
 
         Args:
             val_loss (float): The validation loss.
             model (torch.nn.Module): The model to save.
+
+        Returns:
+            bool: True if training should be stopped, False otherwise.
         """
         if val_loss > self.best_val_loss:
             self.counter += 1

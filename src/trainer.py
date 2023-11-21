@@ -1,19 +1,20 @@
 import numpy as np
+
 import torch
-from torch.utils.data import DataLoader
 from pibrary.logger import logger
+from torch.utils.data import DataLoader
+
 from src.utils.callbacks import EarlyStopping
-from src.utils.metrics import RegressionMetrics
 
 
 class Trainer:
-    def __init__(self, model, criterion=None, optimizer=None, learning_rate=0.001, batch_size=32, num_epochs=10, patience=10, device="cpu", verbose=1, **kwargs):
+    def __init__(self, model: torch.nn.Module, criterion=None, optimizer=None, learning_rate: float = 0.001, batch_size: int = 32, num_epochs: int = 10, patience: int = 10, device: str = "cpu", verbose: int = 1, **kwargs):
         """
         Initialize the Trainer for training a PyTorch model.
 
         Args:
             model (torch.nn.Module): The PyTorch model to be trained.
-            loss_fn: The loss function (criterion) for training (default: None for Kullback-Leibler Divergence loss).
+            criterion: The loss function (criterion) for training (default: None MSE loss).
             optimizer: The optimizer for training (default: None for Adam optimizer).
             learning_rate (float): The learning rate for the optimizer (default: 0.001).
             batch_size (int): The batch size for training (default: 32).
@@ -101,13 +102,22 @@ class Trainer:
         return loss.item()
 
     def predict_step(self, X):
+        """
+        Perform a prediction step.
+
+        Args:
+            X: The input data.
+
+        Returns:
+            np.ndarray: The predicted results.
+        """
         X = X.to(self.device)
         with torch.no_grad():
             y_pred = self.model.forward(X)
             y_pred = y_pred.exp().detach().cpu().numpy()
         return y_pred
 
-    def train(self, dataloader):
+    def train(self, dataloader: DataLoader) -> float:
         """
         Train the model.
 
@@ -126,7 +136,7 @@ class Trainer:
             epoch_loss += (loss/n_iters)
         return epoch_loss
 
-    def validate(self, dataloader):
+    def validate(self, dataloader: DataLoader) -> float:
         """
         Validate the model.
 
@@ -144,14 +154,14 @@ class Trainer:
             epoch_loss += (loss/n_iters)
         return epoch_loss
 
-    def _create_dataloader(self, dataset, batch_size, shuffle):
+    def _create_dataloader(self, dataset, batch_size: int, shuffle: bool) -> DataLoader:
         """
         Create a data loader for a dataset.
 
         Args:
             dataset: The dataset.
             batch_size (int): The batch size.
-            shuffle: Whether to shuffle the data.
+            shuffle (bool): Whether to shuffle the data.
 
         Returns:
             DataLoader: The data loader.
@@ -199,7 +209,7 @@ class Trainer:
                 val_losses.append(val_loss)
             else:
                 val_loss = np.nan
-            
+
             if self.verbose:
                 epoch_log = f"Epoch: [{epoch + 1}/{self.num_epochs}], Train Loss: {train_loss}"
                 if val_dataloader is not None:
